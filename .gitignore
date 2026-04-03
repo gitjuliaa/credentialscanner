@@ -1,0 +1,5 @@
+echo ".venv/" >> .gitignore
+git add .gitignore
+git rm -r --cached .venv 2>/dev/null || true
+git commit -m "Remove .venv and update gitignore"
+git push

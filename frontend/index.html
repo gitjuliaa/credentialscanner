@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CredentialScanner</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-inner">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>
+        </div>
+        <span>CredentialScanner</span>
+      </div>
+      <div class="nav-links">
+        <a href="#" class="nav-link active" data-page="scan">Scan</a>
+        <a href="#" class="nav-link" data-page="results">Results</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <div id="page-scan" class="page active">
+
+      <div class="hero">
+        <div class="hero-badge">Security Tool</div>
+        <h1 class="hero-title">Detect Secrets in<br/><span class="gradient-text">Any Codebase</span></h1>
+        <p class="hero-sub">Scan local projects or GitHub repos for leaked API keys, tokens and high-entropy strings using pattern matching and Shannon entropy analysis.</p>
+        <div class="hero-stats">
+          <div class="stat"><span class="stat-num">15+</span><span class="stat-label">Secret Patterns</span></div>
+          <div class="stat-divider"></div>
+          <div class="stat"><span class="stat-num">4</span><span class="stat-label">Severity Levels</span></div>
+          <div class="stat-divider"></div>
+          <div class="stat"><span class="stat-num">Git</span><span class="stat-label">History Scan</span></div>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="terminal-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <span class="terminal-title">credentialscanner</span>
+        </div>
+        <div class="terminal-body">
+          <p><span class="t-prompt">$</span> python main.py ./myproject --git --min-severity HIGH</p>
+          <p class="t-info">[*] Scanning files in: ./myproject</p>
+          <p class="t-critical">[CRITICAL] AWS Access Key → config.py:14</p>
+          <p class="t-high">[HIGH] Generic API Key → .env.backup:3</p>
+          <p class="t-high">[HIGH] High Entropy String (entropy=4.82) → utils.py:67</p>
+          <p class="t-muted">────────────────────────────────────</p>
+          <p class="t-success">Scan Complete — 3 finding(s) total</p>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <h2 class="form-title">New Scan</h2>
+        <p class="form-sub">Enter a local path or GitHub repo URL to begin</p>
+
+        <div class="form-group">
+          <label>Local Project Path</label>
+          <input type="text" id="scan-path" placeholder="C:\Users\julia\myproject" />
+        </div>
+
+        <div class="divider-row">
+          <span class="divider-line"></span>
+          <span class="divider-text">or</span>
+          <span class="divider-line"></span>
+        </div>
+
+        <div class="form-group">
+          <label>GitHub Repo URL</label>
+          <input type="text" id="github-url" placeholder="https://github.com/username/repo" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Minimum Severity</label>
+            <select id="min-severity">
+              <option value="LOW">Low</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HIGH" selected>High</option>
+              <option value="CRITICAL">Critical</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Max Commits</label>
+            <input type="number" id="max-commits" value="50" min="1" max="500" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="include-git" />
+            <span class="checkbox-custom"></span>
+            <span>Include git history scan</span>
+          </label>
+        </div>
+
+        <button id="scan-btn" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Run Scan
+        </button>
+      </div>
+
+      <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <div>
+          <p id="loading-text">Scanning...</p>
+          <p class="loading-sub">This may take a moment for large repos</p>
+        </div>
+      </div>
+
+      <div id="summary" class="summary hidden">
+        <div class="summary-card critical">
+          <div class="summary-num" id="count-critical">0</div>
+          <div class="summary-label">Critical</div>
+        </div>
+        <div class="summary-card high">
+          <div class="summary-num" id="count-high">0</div>
+          <div class="summary-label">High</div>
+        </div>
+        <div class="summary-card medium">
+          <div class="summary-num" id="count-medium">0</div>
+          <div class="summary-label">Medium</div>
+        </div>
+        <div class="summary-card low">
+          <div class="summary-num" id="count-low">0</div>
+          <div class="summary-label">Low</div>
+        </div>
+      </div>
+
+      <div id="error-box" class="error-box hidden"></div>
+    </div>
+
+    <div id="page-results" class="page hidden">
+      <div class="results-header">
+        <div>
+          <h2>Scan Results</h2>
+          <p id="results-meta" class="results-meta">No scan run yet</p>
+        </div>
+        <button class="btn-export" id="export-btn">Export CSV</button>
+      </div>
+
+      <div class="filters">
+        <input type="text" id="filter-input" placeholder="Filter by file, name or match..." />
+        <select id="filter-severity">
+          <option value="">All Severities</option>
+          <option value="CRITICAL">Critical</option>
+          <option value="HIGH">High</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="LOW">Low</option>
+        </select>
+        <select id="filter-type">
+          <option value="">All Types</option>
+          <option value="pattern">Pattern</option>
+          <option value="entropy">Entropy</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table id="findings-table">
+          <thead>
+            <tr>
+              <th>Severity</th>
+              <th>Name</th>
+              <th>File</th>
+              <th>Line</th>
+              <th>Match</th>
+              <th>Source</th>
+            </tr>
+          </thead>
+          <tbody id="findings-body"></tbody>
+        </table>
+        <div id="no-findings" class="no-findings hidden">No findings match your filters.</div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
