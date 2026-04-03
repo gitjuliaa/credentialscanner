@@ -1,4 +1,4 @@
-# Credential Scanner
+# Secret Scanner
 
 A security tool that detects leaked API keys, tokens, and secrets. The tool utilises regex pattern matching and Shannon entropy analysis to catch code that looks like secrets.
 
