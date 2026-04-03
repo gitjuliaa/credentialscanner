@@ -3,6 +3,7 @@
 A security tool that detects leaked API keys, tokens, and secrets. The tool utilises regex pattern matching and Shannon entropy analysis to catch code that looks like secrets.
 
 Built with Python/Flask (Gunicorn in production), JavaScript frontend, Docker and deployed on Railway. 
+
 **Live Demo**: [credentialscanner-production.up.railway.app](https://credentialscanner-production.up.railway.app)
 
 
